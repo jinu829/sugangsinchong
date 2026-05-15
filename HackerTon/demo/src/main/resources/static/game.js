@@ -5,6 +5,7 @@ let randomBackgroundGimmickTimer = null;
 
 let isGameStarted = false;
 let isGameOver = false;
+let isSerinPopupTriggered = false;
 
 let courseCount = 0;
 let creditCount = 0;
@@ -22,7 +23,6 @@ let appliedCourseCodes = new Set();
 let appliedButtons = [];
 
 const GAME_LIMIT_SECONDS = 60;
-
 
 const courses = [
     { subjectCode: "009914", classNumber: "001", department: "컴퓨터공학과", courseName: "공학설계기초", credit: "3.0/3/0", courseType: "전선", grade: "2", schedule: "금 09:00-12:00" },
@@ -62,6 +62,14 @@ const timeGimmickNumber = document.getElementById("timeGimmickNumber");
 const timeStopBtn = document.getElementById("timeStopBtn");
 const timeGimmickCloseBtn = document.getElementById("timeGimmickCloseBtn");
 
+// 세린이 팝업창 요소
+const serinModal = document.getElementById('serinModal');
+const serinCloseX = document.getElementById('serinCloseX');
+const serinMainImg = document.getElementById('serinMainImg');
+const serinBtnGroup = document.getElementById('serinBtnGroup');
+const trustBtn = document.getElementById('trustBtn');
+const distrustBtn = document.getElementById('distrustBtn');
+
 window.addEventListener("load", function () {
     courseTable.innerHTML = "";
     selectedCourses.innerHTML = "";
@@ -96,6 +104,7 @@ startBtn.addEventListener("click", function () {
 
     isGameStarted = true;
     isGameOver = false;
+    isSerinPopupTriggered = false;
     startTime = Date.now();
 
     courseCount = 0;
@@ -129,6 +138,7 @@ startBtn.addEventListener("click", function () {
     }, GAME_LIMIT_SECONDS * 1000);
 
     startRandomBackgroundGimmicks();
+    triggerSerinPopupOnce();
 });
 
 function renderRandomCourses() {
@@ -186,7 +196,6 @@ function startRandomApplyGimmick(course, button) {
     gimmicks[randomIndex]();
 }
 
-/* 수강신청 중 랜덤 배경 기믹 */
 function startRandomBackgroundGimmicks() {
     randomBackgroundGimmickTimer = setInterval(function () {
         if (!isGameStarted || isGameOver) return;
@@ -201,25 +210,58 @@ function startRandomBackgroundGimmicks() {
     }, 12000);
 }
 
-/* 기본 매크로 */
+function triggerSerinPopupOnce() {
+    if (isSerinPopupTriggered) return;
+
+    const randomDelay = Math.floor(Math.random() * 30000) + 10000;
+
+    setTimeout(() => {
+        if (!isGameOver && isGameStarted) {
+            startRandomSerinPopup();
+            isSerinPopupTriggered = true;
+        }
+    }, randomDelay);
+}
+
+function startRandomSerinPopup() {
+    serinMainImg.src = "Gemini_Generated_Image_l4qgrql4qgrql4qg.png";
+    serinBtnGroup.style.display = 'flex';
+    serinModal.style.display = 'flex';
+}
+
+trustBtn.addEventListener('click', function() {
+    serinMainImg.src = "Gemini_Generated_Image_v1t9stv1t9stv1t9.png";
+    showResultState();
+});
+
+distrustBtn.addEventListener('click', function() {
+    serinMainImg.src = "Gemini_Generated_Image_lhajsylhajsylhaj.png";
+    showResultState();
+});
+
+// 결과 화면 상태 변경 로직 (타이머 제거)
+function showResultState() {
+    serinBtnGroup.style.display = 'none'; // 하단 선택 버튼 숨기기
+    // 자동 닫힘 없음! 오직 X 버튼으로만 닫힘
+}
+
+// X 버튼 닫기 기능
+serinCloseX.addEventListener('click', function() {
+    serinModal.style.display = 'none';
+});
+
 function openMacroModal() {
     currentMacroCode = makeRandomCode(4);
-
     macroNumber.textContent = currentMacroCode;
     macroInput.value = "";
-
     resetMacroStyle();
-
     macroModal.style.display = "flex";
 }
 
-/* 긴 매크로: 4~10자 */
 function openLongMacroModal() {
     const length = Math.floor(Math.random() * 7) + 4;
-
     currentMacroCode = makeRandomCode(length);
     macroNumber.textContent = currentMacroCode;
-
     if (length <= 6) {
         macroNumber.style.fontSize = "88px";
         macroNumber.style.letterSpacing = "16px";
@@ -230,10 +272,8 @@ function openLongMacroModal() {
         macroNumber.style.fontSize = "54px";
         macroNumber.style.letterSpacing = "6px";
     }
-
     macroNumber.style.whiteSpace = "nowrap";
     macroNumber.style.overflow = "hidden";
-
     macroInput.value = "";
     macroModal.style.display = "flex";
 }
@@ -241,23 +281,19 @@ function openLongMacroModal() {
 function makeRandomCode(length) {
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let result = "";
-
     for (let i = 0; i < length; i++) {
         result += chars[Math.floor(Math.random() * chars.length)];
     }
-
     return result;
 }
 
 macroSubmitBtn.addEventListener("click", function () {
     if (isGameOver) return;
-
     if (macroInput.value.trim().toUpperCase() !== currentMacroCode) {
         alert("매크로 번호가 일치하지 않습니다.");
         macroInput.value = "";
         return;
     }
-
     macroModal.style.display = "none";
     resetMacroStyle();
     openConfirmStep1();
@@ -278,13 +314,10 @@ function resetMacroStyle() {
     macroNumber.style.overflow = "visible";
 }
 
-/* 3초 정확히 맞추기 */
 function openTimeGimmick() {
     timerGimmickModal.style.display = "flex";
     timeGimmickStart = Date.now();
-
     clearInterval(timeGimmickInterval);
-
     timeGimmickInterval = setInterval(function () {
         const elapsed = (Date.now() - timeGimmickStart) / 1000;
         timeGimmickNumber.textContent = elapsed.toFixed(2).replace(".", ":");
@@ -293,11 +326,8 @@ function openTimeGimmick() {
 
 timeStopBtn.addEventListener("click", function () {
     if (isGameOver) return;
-
     const elapsed = (Date.now() - timeGimmickStart) / 1000;
-
     clearInterval(timeGimmickInterval);
-
     if (elapsed >= 2.95 && elapsed <= 3.05) {
         timerGimmickModal.style.display = "none";
         openConfirmStep1();
@@ -314,25 +344,18 @@ function closeTimeGimmick() {
     timerGimmickModal.style.display = "none";
 }
 
-/* 화면 반전 10초 */
 function startScreenInvert() {
     if (document.body.classList.contains("screen-invert")) return;
-
     document.body.classList.add("screen-invert");
-
     setTimeout(function () {
         document.body.classList.remove("screen-invert");
     }, 10000);
 }
 
-/* 마우스 반전 10초 */
 function startMouseReverse() {
     if (isMouseReverse) return;
-
     isMouseReverse = true;
-
     document.addEventListener("mousemove", reverseMouseMove);
-
     setTimeout(function () {
         endMouseReverse();
     }, 10000);
@@ -341,7 +364,6 @@ function startMouseReverse() {
 function reverseMouseMove(event) {
     const reversedX = window.innerWidth - event.clientX;
     const reversedY = window.innerHeight - event.clientY;
-
     window.scrollTo(reversedX * 0.01, reversedY * 0.01);
 }
 
@@ -350,40 +372,21 @@ function endMouseReverse() {
     isMouseReverse = false;
 }
 
-/* 수강신청 확인창 */
 function openConfirmStep1() {
     if (isGameOver) return;
-
     confirmStep = 1;
-
-    confirmMessage.innerHTML = `
-        선택한 과목을 수강신청 하시겠습니까?<br><br>
-        교과목명(Course Title)
-    `;
-
+    confirmMessage.innerHTML = `선택한 과목을 수강신청 하시겠습니까?<br><br>교과목명(Course Title)`;
     confirmCourseName.textContent = selectedCourse.courseName;
-
     randomizeConfirmButtonOrder();
-
     confirmModal.style.display = "flex";
 }
 
 function openConfirmStep2() {
     if (isGameOver) return;
-
     confirmStep = 2;
-
-    confirmMessage.innerHTML = `
-        과목이 신청 되었습니다. 수강신청내역을 재 조회 하시겠습니까?<br><br>
-        ※ 취소를 선택하실 경우 [수강신청내역]이 갱신되지 않습니다.<br><br>
-        취소를 선택하실 경우 수강신청 최종 완료 후 반드시 [수강신청내역]
-        재조회를 눌러 신청내역을 확인하세요.
-    `;
-
+    confirmMessage.innerHTML = `과목이 신청 되었습니다. 수강신청내역을 재 조회 하시겠습니까?<br><br>※ 취소를 선택하실 경우 [수강신청내역]이 갱신되지 않습니다.<br><br>취소를 선택하실 경우 수강신청 최종 완료 후 반드시 [수강신청내역] 재조회를 눌러 신청내역을 확인하세요.`;
     confirmCourseName.textContent = "";
-
     randomizeConfirmButtonOrder();
-
     confirmModal.style.display = "flex";
 }
 
@@ -404,22 +407,18 @@ function resetConfirmButtons() {
 
 confirmOkBtn.addEventListener("click", function () {
     if (isGameOver) return;
-
     if (confirmStep === 1) {
         openConfirmStep2();
     } else if (confirmStep === 2) {
         confirmOkBtn.disabled = true;
         confirmOkBtn.textContent = "처리중";
-
         setTimeout(function () {
             confirmModal.style.display = "none";
             confirmOkBtn.disabled = false;
             confirmOkBtn.textContent = "확인";
             resetConfirmButtons();
-
             applyCourse(selectedCourse, selectedButton, true);
             markAllAppliedButtonsComplete();
-
             selectedCourse = null;
             selectedButton = null;
             currentMacroCode = "";
@@ -431,10 +430,8 @@ confirmOkBtn.addEventListener("click", function () {
 confirmCancelBtn.addEventListener("click", function () {
     if (confirmStep === 2) {
         applyCourse(selectedCourse, selectedButton, false);
-
         confirmModal.style.display = "none";
         resetConfirmButtons();
-
         selectedCourse = null;
         selectedButton = null;
         currentMacroCode = "";
@@ -443,6 +440,7 @@ confirmCancelBtn.addEventListener("click", function () {
         closeConfirmModal();
     }
 });
+
 confirmCloseBtn.addEventListener("click", closeConfirmModal);
 
 function closeConfirmModal() {
@@ -451,24 +449,15 @@ function closeConfirmModal() {
     confirmStep = 0;
 }
 
-/* 실제 수강신청 처리 */
 function applyCourse(course, button, markComplete) {
     if (isGameOver) return;
-
-    if (appliedCourseCodes.has(course.subjectCode)) {
-        return;
-    }
-
+    if (appliedCourseCodes.has(course.subjectCode)) return;
     appliedCourseCodes.add(course.subjectCode);
     appliedButtons.push(button);
-
     courseCount++;
-
     const creditValue = parseFloat(course.credit);
     creditCount += creditValue;
-
     const newRow = document.createElement("tr");
-
     newRow.innerHTML = `
         <td>${courseCount}</td>
         <td><button class="delete-btn">삭제</button></td>
@@ -484,38 +473,27 @@ function applyCourse(course, button, markComplete) {
         <td>${course.schedule}</td>
         <td><button class="mini-btn">인원보기</button></td>
     `;
-
     selectedCourses.appendChild(newRow);
-
     if (markComplete) {
         button.disabled = true;
         button.textContent = "완료";
     }
-
     updateSummary();
-
     const deleteBtn = newRow.querySelector(".delete-btn");
-
     deleteBtn.addEventListener("click", function () {
         if (isGameOver) return;
-
         newRow.remove();
-
         appliedCourseCodes.delete(course.subjectCode);
         appliedButtons = appliedButtons.filter(function (savedButton) {
             return savedButton !== button;
         });
-
         courseCount--;
         creditCount -= creditValue;
-
         button.disabled = false;
         button.textContent = "신청";
-
         updateSelectedCourseNumbers();
         updateSummary();
     });
-
     checkClear();
 }
 
@@ -528,7 +506,6 @@ function markAllAppliedButtonsComplete() {
 
 function updateSelectedCourseNumbers() {
     const rows = selectedCourses.querySelectorAll("tr");
-
     rows.forEach(function (row, index) {
         row.children[0].textContent = index + 1;
     });
@@ -549,42 +526,33 @@ function gameClear() {
     clearInterval(timerInterval);
     clearTimeout(gameLimitTimer);
     clearInterval(randomBackgroundGimmickTimer);
-
     const clearTime = (Date.now() - startTime) / 1000;
-
     setTimeout(function () {
         alert("수강신청 성공! 기록: " + clearTime.toFixed(2) + "초");
     }, 100);
-
     isGameStarted = false;
 }
 
 function gameOver() {
     if (isGameOver) return;
-
     isGameOver = true;
     isGameStarted = false;
-
     clearInterval(timerInterval);
     clearTimeout(gameLimitTimer);
     clearInterval(randomBackgroundGimmickTimer);
     clearInterval(timeGimmickInterval);
-
     macroModal.style.display = "none";
     confirmModal.style.display = "none";
     timerGimmickModal.style.display = "none";
-
+    serinModal.style.display = "none";
     document.body.classList.remove("screen-invert");
     endMouseReverse();
-
     const applyButtons = document.querySelectorAll(".apply-btn");
     applyButtons.forEach(function (button) {
         button.disabled = true;
     });
-
     startBtn.textContent = "게임 오버";
     startBtn.disabled = true;
-
     alert("게임 오버! 제한시간 1분 안에 수강신청을 완료하지 못했습니다.");
 }
 
