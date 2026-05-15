@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>재밌는 수강신청</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+    <header class="login-topbar">세종대학교 수강신청</header>
+
+    <main class="login-main">
+        <form id="loginForm" class="login-box">
+            <div class="login-box-header">ⓘ 시스템 로그인</div>
+
+            <div class="login-fields">
+                <label for="nameInput">이름</label>
+                <input id="nameInput"
+                       type="text"
+                       autocomplete="off"
+                       placeholder="이름">
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+    </main>
+</div>
+
+<div id="app" class="app">
+
+    <header class="topbar">
+        <div class="brand">
+            <div class="circle"></div>
+            <strong>세종대학교</strong>
+        </div>
+
+        <nav class="top-menu">
+            <span>학부생학사정보 <i class="arrow-down"></i></span>
+            <span>학생서비스 <i class="arrow-down"></i></span>
+        </nav>
+
+        <div class="user-area">
+            <div class="circle small"></div>
+            <strong id="userNameText">000님</strong>
+            <strong>KOR <i class="arrow-down"></i></strong>
+            <div class="circle small"></div>
+        </div>
+    </header>
+
+    <div class="content">
+
+        <aside class="sidebar">
+            <div class="side-item">학적 / 졸업</div>
+            <div class="side-item">수업 / 성적</div>
+            <div class="side-item">강좌조회 및 수강신청</div>
+            <div class="side-sub">교과목조회</div>
+            <div class="side-sub active">수강신청</div>
+            <div class="side-sub">관심과목담기</div>
+            <div class="side-sub">동일과목조회</div>
+            <div class="side-sub">수강내역조회</div>
+            <div class="side-sub">성적 및 강의평가</div>
+        </aside>
+
+        <div id="macroModal" class="modal-overlay">
+            <div class="macro-box">
+                <div class="macro-header">
+                    <span>매크로 입력</span>
+                    <button id="macroCloseBtn">x</button>
+                </div>
+
+                <div class="macro-body">
+                    <div id="macroNumber" class="macro-number">0000</div>
+                    <input id="macroInput"
+                           type="text"
+                           maxlength="20"
+                           autocomplete="off"
+                           placeholder="매크로 번호를 입력하세요">
+                </div>
+
+                <div class="macro-footer">
+                    <button id="macroSubmitBtn">코드입력</button>
+                    <button id="macroCancelBtn">닫기</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="confirmModal" class="modal-overlay">
+            <div class="confirm-box">
+                <div class="confirm-header">
+                    <span>ⓘ 수강신청 확인</span>
+                    <button id="confirmCloseBtn">×</button>
+                </div>
+
+                <div class="confirm-body">
+                    <div class="check-icon">✓</div>
+                    <p id="confirmMessage"></p>
+                    <p id="confirmCourseName"></p>
+                </div>
+
+                <div class="confirm-footer">
+                    <button id="confirmOkBtn">확인</button>
+                    <button id="confirmCancelBtn">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="earlyStartModal" class="modal-overlay">
+            <div class="early-start-box">
+                <div class="early-start-header">
+                    <span>ⓘ 수강신청 확인</span>
+                    <button id="earlyStartCloseBtn">×</button>
+                </div>
+
+                <div class="early-start-body">
+                    <div class="error-icon">×</div>
+                    <p>수강신청 시간이 아닙니다!</p>
+                </div>
+
+                <div class="early-start-footer">
+                    <button id="earlyStartOkBtn">확인</button>
+                    <button id="earlyStartCancelBtn">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="timerGimmickModal" class="modal-overlay">
+            <div class="time-gimmick-box">
+                <div class="time-gimmick-header">
+                    <span>시간을 3초에 정확히 맞추세요!</span>
+                    <button id="timeGimmickCloseBtn">x</button>
+                </div>
+
+                <div class="time-gimmick-body">
+                    <div id="timeGimmickNumber">00:00</div>
+                    <button id="timeStopBtn">정지!</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="serinModal" class="modal-overlay">
+            <div class="serin-popup">
+                <button id="serinCloseX" class="serin-close-x">×</button>
+                <img id="serinMainImg"
+                     src="Serin_01.png"
+                     alt="세린이"
+                     class="serin-img">
+                <div id="serinFallback" class="serin-fallback">세린이 이미지 파일을 같은 폴더에 넣어주세요.</div>
+
+                <div id="serinBtnGroup" class="serin-buttons">
+                    <button id="trustBtn" class="serin-btn">세린이를 믿기</button>
+                    <button id="distrustBtn" class="serin-btn">세린이를 믿지 않기</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="runawayModal" class="modal-overlay">
+            <div class="runaway-box">
+                <div class="runaway-header">
+                    <span>매크로 방지 인증</span>
+                </div>
+
+                <div class="runaway-body">
+                    <p>비정상적인 접근이 감지되었습니다.<br><strong>[확인]</strong> 버튼을 클릭하여 인증하세요.</p>
+                    <div id="runawayArea" class="runaway-container">
+                        <button id="runawayBtn">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="rankingModal" class="modal-overlay">
+            <div class="ranking-box">
+                <div class="ranking-header">
+                    <span>수강신청 랭킹</span>
+                    <button id="rankingCloseBtn">×</button>
+                </div>
+
+                <div class="ranking-body">
+                    <table class="ranking-table">
+                        <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>이름</th>
+                            <th>기록</th>
+                            <th>신청과목</th>
+                        </tr>
+                        </thead>
+                        <tbody id="rankingList">
+                        </tbody>
+                    </table>
+
+                    <p id="rankingEmpty" class="ranking-empty">아직 등록된 기록이 없습니다.</p>
+                </div>
+
+                <div class="ranking-footer">
+                    <button id="rankingResetBtn">기록 초기화</button>
+                    <button id="rankingOkBtn">확인</button>
+                </div>
+            </div>
+        </div>
+
+        <main class="main">
+
+            <div class="main-header">
+                <h1>수강신청</h1>
+                <div id="timer">00.00초</div>
+            </div>
+
+            <div class="tabs">
+                <span class="active-tab">강좌조회</span>
+                <span>관심과목 담기</span>
+                <span>동일과목 조회</span>
+            </div>
+
+            <section class="search-box">
+                <select>
+                    <option>학부</option>
+                </select>
+
+                <select>
+                    <option>2026 / 1학기</option>
+                </select>
+
+                <select>
+                    <option>컴퓨터공학과</option>
+                </select>
+
+                <input type="text" placeholder="학수번호">
+
+                <button class="search-btn">검색</button>
+            </section>
+
+            <section class="section">
+                <h2><span class="dot"></span>수강 대상 교과목</h2>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>순번</th>
+                        <th>신청</th>
+                        <th>학수번호</th>
+                        <th>분반</th>
+                        <th>개설학과</th>
+                        <th>교과목명</th>
+                        <th>수업계획서</th>
+                        <th>강의언어</th>
+                        <th>학점/이론/실습</th>
+                        <th>이수</th>
+                        <th>학년</th>
+                        <th>시간표</th>
+                        <th>인원보기</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="courseTable">
+                    </tbody>
+                </table>
+
+                <p class="summary">
+                    수강 가능 학점: 18 / 신청 과목수: <span id="courseCount">0</span> / 신청 학점:
+                    <span id="creditCount">0</span>
+                </p>
+            </section>
+
+            <section class="section">
+                <h2><span class="dot"></span>수강신청 내역</h2>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>순번</th>
+                        <th>삭제</th>
+                        <th>학수번호</th>
+                        <th>분반</th>
+                        <th>개설학과</th>
+                        <th>교과목명</th>
+                        <th>수업계획서</th>
+                        <th>강의언어</th>
+                        <th>학점/이론/실습</th>
+                        <th>이수</th>
+                        <th>재수강</th>
+                        <th>시간표</th>
+                        <th>인원보기</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="selectedCourses">
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="game-panel">
+                <button id="startBtn">게임 시작</button>
+                <button id="rankingBtn">랭킹 보기</button>
+                <div id="openTimeText">09시 59분 50초</div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
