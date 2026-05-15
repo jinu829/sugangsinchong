@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>재밌는 수강신청</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+    <header class="topbar">
+        <div class="brand">
+            <div class="circle"></div>
+            <strong>세종대학교</strong>
+        </div>
+
+        <nav class="top-menu">
+            <span>학부생학사정보 <i class="arrow-down"></i></span>
+            <span>학생서비스 <i class="arrow-down"></i></span>
+        </nav>
+
+        <div class="user-area">
+            <div class="circle small"></div>
+            <strong>000님</strong>
+            <strong>KOR <i class="arrow-down"></i></strong>
+            <div class="circle small"></div>
+        </div>
+    </header>
+
+    <div class="content">
+
+        <aside class="sidebar">
+            <div class="side-item">학적 / 졸업</div>
+            <div class="side-item">수업 / 성적</div>
+            <div class="side-item">강좌조회 및 수강신청</div>
+            <div class="side-sub">교과목조회</div>
+            <div class="side-sub active">수강신청</div>
+            <div class="side-sub">관심과목담기</div>
+            <div class="side-sub">동일과목조회</div>
+            <div class="side-sub">수강내역조회</div>
+            <div class="side-sub">성적 및 강의평가</div>
+        </aside>
+
+        <div id="macroModal" class="modal-overlay">
+            <div class="macro-box">
+                <div class="macro-header">
+                    <span>매크로 입력</span>
+                    <button id="macroCloseBtn">x</button>
+                </div>
+
+                <div class="macro-body">
+                    <div id="macroNumber" class="macro-number">0000</div>
+                    <input id="macroInput"
+                           type="text"
+                           maxlength="20"
+                           autocomplete="off"
+                           placeholder="매크로 번호를 입력하세요">
+                </div>
+`
+                <div class="macro-footer">
+                    <button id="macroSubmitBtn">코드입력</button>
+                    <button id="macroCancelBtn">닫기</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="confirmModal" class="modal-overlay">
+            <div class="confirm-box">
+                <div class="confirm-header">
+                    <span>ⓘ 수강신청 확인</span>
+                    <button id="confirmCloseBtn">×</button>
+                </div>
+
+                <div class="confirm-body">
+                    <div class="check-icon">✓</div>
+                    <p id="confirmMessage"></p>
+                    <p id="confirmCourseName"></p>
+                </div>
+
+                <div class="confirm-footer">
+                    <button id="confirmOkBtn">확인</button>
+                    <button id="confirmCancelBtn">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="timerGimmickModal" class="modal-overlay">
+            <div class="time-gimmick-box">
+                <div class="time-gimmick-header">
+                    <span>시간을 3초에 정확히 맞추세요!</span>
+                    <button id="timeGimmickCloseBtn">x</button>
+                </div>
+
+                <div class="time-gimmick-body">
+                    <div id="timeGimmickNumber">00:00</div>
+                    <button id="timeStopBtn">정지!</button>
+                </div>
+            </div>
+        </div>
+
+        <main class="main">
+
+            <h1>수강신청</h1>
+
+            <div class="tabs">
+                <span class="active-tab">강좌조회</span>
+                <span>관심과목 담기</span>
+                <span>동일과목 조회</span>
+            </div>
+
+            <section class="search-box">
+                <select>
+                    <option>학부</option>
+                </select>
+
+                <select>
+                    <option>2026 / 1학기</option>
+                </select>
+
+                <select>
+                    <option>컴퓨터공학과</option>
+                </select>
+
+                <input type="text" placeholder="학수번호">
+
+                <button class="search-btn">검색</button>
+            </section>
+
+            <section class="section">
+                <h2><span class="dot"></span>수강 대상 교과목</h2>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>순번</th>
+                        <th>신청</th>
+                        <th>학수번호</th>
+                        <th>분반</th>
+                        <th>개설학과</th>
+                        <th>교과목명</th>
+                        <th>수업계획서</th>
+                        <th>강의언어</th>
+                        <th>학점/이론/실습</th>
+                        <th>이수</th>
+                        <th>학년</th>
+                        <th>시간표</th>
+                        <th>인원보기</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="courseTable">
+                    </tbody>
+                </table>
+
+                <p class="summary">
+                    수강 가능 학점: 15 / 신청 과목수: <span id="courseCount">0</span> / 신청 학점:
+                    <span id="creditCount">0</span>
+                </p>
+            </section>
+
+            <section class="section">
+                <h2><span class="dot"></span>수강신청 내역</h2>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>순번</th>
+                        <th>삭제</th>
+                        <th>학수번호</th>
+                        <th>분반</th>
+                        <th>개설학과</th>
+                        <th>교과목명</th>
+                        <th>수업계획서</th>
+                        <th>강의언어</th>
+                        <th>학점/이론/실습</th>
+                        <th>이수</th>
+                        <th>재수강</th>
+                        <th>시간표</th>
+                        <th>인원보기</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="selectedCourses">
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="game-panel">
+                <button id="startBtn">게임 시작</button>
+                <button id="refreshBtn">재조회</button>
+                <div id="timer">00.00초</div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
