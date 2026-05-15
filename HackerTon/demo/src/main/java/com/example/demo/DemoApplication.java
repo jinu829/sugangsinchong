@@ -116,10 +116,10 @@ class TimeController {
 // 여석 여부(hasSeats)와 남은 시간(remainingSeconds)을 반환한다.
 //
 // 흐름:
-//   1. POST /api/subject/timer/start  → 10:00:00 에 모든 과목 타이머 시작
-//   2. GET  /api/subject/timer/check/{subjectName} → 버튼 클릭 시 여석 확인
-//      - remainingSeconds > 0 : hasSeats=true  → 수강신청 매크로 창 표시
-//      - remainingSeconds = 0 : hasSeats=false → "수강여석이 없습니다!" 창 표시
+// 1. POST /api/subject/timer/start → 10:00:00 에 모든 과목 타이머 시작
+// 2. GET /api/subject/timer/check/{subjectName} → 버튼 클릭 시 여석 확인
+// - remainingSeconds > 0 : hasSeats=true → 수강신청 매크로 창 표시
+// - remainingSeconds = 0 : hasSeats=false → "수강여석이 없습니다!" 창 표시
 // ──────────────────────────────────────────────
 @RestController
 @RequestMapping("/api/subject")
@@ -128,14 +128,14 @@ class SubjectTimerController {
     // ── 과목별 여석 유지 시간 설정 ──────────────────
     // 각 과목마다 수강신청 오픈 후 여석이 남아있는 시간(초)을 정의한다.
     // 이 값을 변경하면 과목별 타이머 길이를 조정할 수 있다.
-    private static final Map<String, Integer> SUBJECT_DURATIONS = new LinkedHashMap<>();
+    static final Map<String, Integer> SUBJECT_DURATIONS = new LinkedHashMap<>();
 
     static {
-        SUBJECT_DURATIONS.put("알고리즘",   120); // 2분
-        SUBJECT_DURATIONS.put("운영체제",    60); // 1분
+        SUBJECT_DURATIONS.put("알고리즘", 120); // 2분
+        SUBJECT_DURATIONS.put("운영체제", 60); // 1분
         SUBJECT_DURATIONS.put("데이터베이스", 90); // 1분 30초
-        SUBJECT_DURATIONS.put("컴퓨터구조",  45); // 45초
-        SUBJECT_DURATIONS.put("네트워크",    75); // 1분 15초
+        SUBJECT_DURATIONS.put("컴퓨터구조", 45); // 45초
+        SUBJECT_DURATIONS.put("네트워크", 75); // 1분 15초
     }
 
     // 과목별 타이머 시작 시각을 저장하는 맵
@@ -167,8 +167,10 @@ class SubjectTimerController {
     // GET /api/subject/timer/check/{subjectName}
     // 특정 과목의 타이머 잔여 시간을 계산하여 여석 여부를 반환한다.
     //
-    // 응답 예시 (여석 있음): { "hasSeats": true,  "remainingSeconds": 47, "subjectName": "알고리즘" }
-    // 응답 예시 (여석 없음): { "hasSeats": false, "remainingSeconds": 0,  "subjectName": "운영체제" }
+    // 응답 예시 (여석 있음): { "hasSeats": true, "remainingSeconds": 47, "subjectName":
+    // "알고리즘" }
+    // 응답 예시 (여석 없음): { "hasSeats": false, "remainingSeconds": 0, "subjectName":
+    // "운영체제" }
     @GetMapping("/timer/check/{subjectName}")
     public ResponseEntity<Map<String, Object>> checkTimer(
             @PathVariable String subjectName) {
@@ -246,27 +248,26 @@ class SubjectTimerController {
 // 프론트엔드는 응답의 type 값에 따라 알맞은 기믹 UI를 렌더링한다.
 //
 // 기믹 종류 5가지:
-//   CLICK_COUNT     - 버튼을 N번 빠르게 클릭
-//   TYPE_CODE       - 랜덤 인증 코드 타이핑
-//   MATH_QUIZ       - 간단한 수학 계산 문제
-//   BUTTON_SEQUENCE - 버튼을 정해진 순서대로 클릭
-//   SLIDER          - 슬라이더를 목표 위치로 이동
+// CLICK_COUNT - 버튼을 N번 빠르게 클릭
+// TYPE_CODE - 랜덤 인증 코드 타이핑
+// MATH_QUIZ - 간단한 수학 계산 문제
+// BUTTON_SEQUENCE - 버튼을 정해진 순서대로 클릭
+// SLIDER - 슬라이더를 목표 위치로 이동
 // ──────────────────────────────────────────────
 @RestController
 @RequestMapping("/api/gimmick")
 class GimmickController {
 
     // 기믹 유형 식별자 상수
-    private static final String CLICK_COUNT      = "CLICK_COUNT";
-    private static final String TYPE_CODE        = "TYPE_CODE";
-    private static final String MATH_QUIZ        = "MATH_QUIZ";
-    private static final String BUTTON_SEQUENCE  = "BUTTON_SEQUENCE";
-    private static final String SLIDER           = "SLIDER";
+    private static final String CLICK_COUNT = "CLICK_COUNT";
+    private static final String TYPE_CODE = "TYPE_CODE";
+    private static final String MATH_QUIZ = "MATH_QUIZ";
+    private static final String BUTTON_SEQUENCE = "BUTTON_SEQUENCE";
+    private static final String SLIDER = "SLIDER";
 
     // 무작위 선택에 사용할 기믹 유형 목록
     private static final List<String> GIMMICK_TYPES = List.of(
-            CLICK_COUNT, TYPE_CODE, MATH_QUIZ, BUTTON_SEQUENCE, SLIDER
-    );
+            CLICK_COUNT, TYPE_CODE, MATH_QUIZ, BUTTON_SEQUENCE, SLIDER);
 
     // 코드 생성에 사용할 문자 집합 (혼동하기 쉬운 0/O, 1/I/l 제외)
     private static final String CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -281,11 +282,11 @@ class GimmickController {
     // 프론트엔드는 응답의 type 필드를 읽어 UI를 결정한다.
     //
     // 공통 응답 필드:
-    //   type        - 기믹 유형 문자열
-    //   title       - 기믹 제목 (UI 헤더 표시용)
-    //   description - 사용자에게 보여줄 안내 문구
-    //   timeLimitSeconds - 제한 시간(초)
-    //   data        - 기믹별 세부 설정 (아래 각 기믹 설명 참고)
+    // type - 기믹 유형 문자열
+    // title - 기믹 제목 (UI 헤더 표시용)
+    // description - 사용자에게 보여줄 안내 문구
+    // timeLimitSeconds - 제한 시간(초)
+    // data - 기믹별 세부 설정 (아래 각 기믹 설명 참고)
     @GetMapping("/random")
     public ResponseEntity<Map<String, Object>> getRandomGimmick() {
 
@@ -325,10 +326,10 @@ class GimmickController {
     // CLICK_COUNT·BUTTON_SEQUENCE는 클라이언트 완료 보고 방식이므로 "COMPLETED"로 처리한다.
     private Object extractCorrectAnswer(String type, Map<String, Object> data) {
         return switch (type) {
-            case TYPE_CODE       -> data.get("code");
-            case MATH_QUIZ       -> data.get("answer");
-            case SLIDER          -> data.get("targetPercent");
-            default              -> "COMPLETED"; // CLICK_COUNT, BUTTON_SEQUENCE
+            case TYPE_CODE -> data.get("code");
+            case MATH_QUIZ -> data.get("answer");
+            case SLIDER -> data.get("targetPercent");
+            default -> "COMPLETED"; // CLICK_COUNT, BUTTON_SEQUENCE
         };
     }
 
@@ -418,16 +419,22 @@ class GimmickController {
 
     // 덧셈·뺄셈·곱셈 중 하나를 무작위로 골라 계산 문제와 정답을 생성한다.
     private Map<String, Object> generateMathQuiz() {
-        int a = 1 + random.nextInt(50);   // 1~50
-        int b = 1 + random.nextInt(50);   // 1~50
-        int op = random.nextInt(3);        // 0=덧셈, 1=뺄셈, 2=곱셈
+        int a = 1 + random.nextInt(50); // 1~50
+        int b = 1 + random.nextInt(50); // 1~50
+        int op = random.nextInt(3); // 0=덧셈, 1=뺄셈, 2=곱셈
 
         String expression;
         int answer;
 
         switch (op) {
-            case 0 -> { expression = a + " + " + b; answer = a + b; }
-            case 1 -> { expression = a + " - " + b; answer = a - b; }
+            case 0 -> {
+                expression = a + " + " + b;
+                answer = a + b;
+            }
+            case 1 -> {
+                expression = a + " - " + b;
+                answer = a - b;
+            }
             default -> {
                 // 곱셈은 숫자가 너무 커지지 않도록 범위를 제한
                 a = 1 + random.nextInt(12);
@@ -458,14 +465,14 @@ class GimmickController {
 // HTTP 세션으로 로그인 상태를 관리한다.
 //
 // 흐름:
-//   1. 페이지 로드 시 GET /api/auth/status 호출
-//      → loggedIn: false 이면 로그인 창 표시
-//      → loggedIn: true  이면 바로 메인 화면으로 진입
-//   2. 로그인 창에서 POST /api/auth/login 호출
-//      → 성공 시 세션에 사용자 정보 저장, 이후 접속부터는 창 미표시
-//      → 실패 시 401 반환, 로그인 창 유지
-//   3. POST /api/auth/logout 호출 시 세션 삭제
-//      → 다음 접속 시 다시 로그인 창 표시
+// 1. 페이지 로드 시 GET /api/auth/status 호출
+// → loggedIn: false 이면 로그인 창 표시
+// → loggedIn: true 이면 바로 메인 화면으로 진입
+// 2. 로그인 창에서 POST /api/auth/login 호출
+// → 성공 시 세션에 사용자 정보 저장, 이후 접속부터는 창 미표시
+// → 실패 시 401 반환, 로그인 창 유지
+// 3. POST /api/auth/logout 호출 시 세션 삭제
+// → 다음 접속 시 다시 로그인 창 표시
 // ──────────────────────────────────────────────
 @RestController
 @RequestMapping("/api/auth")
@@ -479,16 +486,15 @@ class AuthController {
     private static final Map<String, String> USER_DB = Map.of(
             "student1", "pass1234",
             "student2", "pass1234",
-            "admin",    "admin1234"
-    );
+            "admin", "admin1234");
 
     // GET /api/auth/status
     // 현재 세션에 로그인 정보가 있는지 확인한다.
     // 프론트엔드가 페이지 로드 직후 이 API를 호출하여
     // 로그인 창 표시 여부를 결정한다.
     //
-    // 응답 예시 (로그인됨):  { "loggedIn": true,  "username": "student1" }
-    // 응답 예시 (미로그인):  { "loggedIn": false, "username": null }
+    // 응답 예시 (로그인됨): { "loggedIn": true, "username": "student1" }
+    // 응답 예시 (미로그인): { "loggedIn": false, "username": null }
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> checkStatus(HttpSession session) {
 
@@ -509,7 +515,7 @@ class AuthController {
     //
     // 요청 body: { "username": "student1", "password": "pass1234" }
     // 성공 응답: { "success": true, "username": "student1" }
-    // 실패 응답: { "success": false, "message": "..." }  (HTTP 401)
+    // 실패 응답: { "success": false, "message": "..." } (HTTP 401)
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(
             @RequestBody Map<String, String> credentials,
@@ -525,8 +531,9 @@ class AuthController {
                 && USER_DB.containsKey(username)
                 && USER_DB.get(username).equals(password)) {
 
-            // 로그인 성공 → 세션에 사용자 이름 저장
+            // 로그인 성공 → 세션에 사용자 이름 저장 및 게임 시작 시각 기록
             session.setAttribute(SESSION_USER_KEY, username);
+            RankingManager.recordStart(username);
 
             result.put("success", true);
             result.put("username", username);
@@ -561,24 +568,24 @@ class AuthController {
 // 수강신청 버튼 클릭 → 기믹 완료 → 이 API 호출의 흐름으로 동작한다.
 // 아래 5단계를 순서대로 검증하며, 하나라도 실패하면 즉시 실패 이유와 함께 반환한다.
 //
-//   1. 로그인 여부        → NOT_LOGGED_IN
-//   2. 수강신청 시간(10시) → TIME_NOT_OPEN
-//   3. 과목 여석          → NO_SEATS
-//   4. 중복 신청 여부      → ALREADY_ENROLLED
-//   5. 기믹 정답 검증      → GIMMICK_NOT_STARTED / GIMMICK_FAILED
-//   → 전부 통과           → SUCCESS
+// 1. 로그인 여부 → NOT_LOGGED_IN
+// 2. 수강신청 시간(10시) → TIME_NOT_OPEN
+// 3. 과목 여석 → NO_SEATS
+// 4. 중복 신청 여부 → ALREADY_ENROLLED
+// 5. 기믹 정답 검증 → GIMMICK_NOT_STARTED / GIMMICK_FAILED
+// → 전부 통과 → SUCCESS
 // ──────────────────────────────────────────────
 @RestController
 @RequestMapping("/api/enroll")
 class EnrollmentController {
 
     // 실패 이유 코드 상수 (프론트엔드가 이 값으로 어떤 창을 띄울지 결정한다)
-    private static final String REASON_NOT_LOGGED_IN      = "NOT_LOGGED_IN";
-    private static final String REASON_TIME_NOT_OPEN      = "TIME_NOT_OPEN";
-    private static final String REASON_NO_SEATS           = "NO_SEATS";
-    private static final String REASON_ALREADY_ENROLLED   = "ALREADY_ENROLLED";
+    private static final String REASON_NOT_LOGGED_IN = "NOT_LOGGED_IN";
+    private static final String REASON_TIME_NOT_OPEN = "TIME_NOT_OPEN";
+    private static final String REASON_NO_SEATS = "NO_SEATS";
+    private static final String REASON_ALREADY_ENROLLED = "ALREADY_ENROLLED";
     private static final String REASON_GIMMICK_NOT_STARTED = "GIMMICK_NOT_STARTED";
-    private static final String REASON_GIMMICK_FAILED     = "GIMMICK_FAILED";
+    private static final String REASON_GIMMICK_FAILED = "GIMMICK_FAILED";
 
     // 수강신청 완료 목록: 과목명 → 신청한 사용자 이름 Set
     // ConcurrentHashMap·newKeySet으로 동시 요청에도 안전하게 처리한다.
@@ -588,22 +595,22 @@ class EnrollmentController {
     // 수강신청을 최종 시도한다. 5단계 검증 후 성공/실패 결과를 반환한다.
     //
     // 요청 body:
-    //   { "subjectName": "알고리즘", "gimmickAnswer": "A3KM9R" }
-    //   TYPE_CODE   → gimmickAnswer: 입력한 코드 문자열
-    //   MATH_QUIZ   → gimmickAnswer: 계산 결과 숫자 (문자열도 가능, 서버에서 파싱)
-    //   SLIDER      → gimmickAnswer: 슬라이더 위치 숫자
-    //   CLICK_COUNT·BUTTON_SEQUENCE → gimmickAnswer: "COMPLETED" (클라이언트 완료 보고)
+    // { "subjectName": "알고리즘", "gimmickAnswer": "A3KM9R" }
+    // TYPE_CODE → gimmickAnswer: 입력한 코드 문자열
+    // MATH_QUIZ → gimmickAnswer: 계산 결과 숫자 (문자열도 가능, 서버에서 파싱)
+    // SLIDER → gimmickAnswer: 슬라이더 위치 숫자
+    // CLICK_COUNT·BUTTON_SEQUENCE → gimmickAnswer: "COMPLETED" (클라이언트 완료 보고)
     //
-    // 성공 응답: { "success": true,  "subjectName": "알고리즘", "message": "..." }
-    // 실패 응답: { "success": false, "failReason": "NO_SEATS",  "message": "..." }
+    // 성공 응답: { "success": true, "subjectName": "알고리즘", "message": "..." }
+    // 실패 응답: { "success": false, "failReason": "NO_SEATS", "message": "..." }
     @PostMapping("/attempt")
     public ResponseEntity<Map<String, Object>> attempt(
             @RequestBody Map<String, Object> body,
             HttpSession session) {
 
         String subjectName = (String) body.get("subjectName");
-        Object userAnswer  = body.get("gimmickAnswer");
-        String username    = (String) session.getAttribute("loggedInUser");
+        Object userAnswer = body.get("gimmickAnswer");
+        String username = (String) session.getAttribute("loggedInUser");
 
         // 공통 응답 베이스 (항상 과목명을 포함)
         Map<String, Object> result = new HashMap<>();
@@ -631,8 +638,7 @@ class EnrollmentController {
 
         // ── 5단계: 기믹 정답 검증 ────────────────────────
         @SuppressWarnings("unchecked")
-        Map<String, Object> gimmickSession =
-                (Map<String, Object>) session.getAttribute("gimmick_" + subjectName);
+        Map<String, Object> gimmickSession = (Map<String, Object>) session.getAttribute("gimmick_" + subjectName);
 
         // 기믹 자체가 발급된 적 없으면 정상 경로가 아님
         if (gimmickSession == null) {
@@ -659,7 +665,8 @@ class EnrollmentController {
 
     // GET /api/enroll/my
     // 현재 로그인한 사용자가 수강신청에 성공한 과목 목록을 반환한다.
-    // 응답 예시: { "username": "student1", "enrolledSubjects": ["알고리즘", "네트워크"], "count": 2 }
+    // 응답 예시: { "username": "student1", "enrolledSubjects": ["알고리즘", "네트워크"],
+    // "count": 2 }
     @GetMapping("/my")
     public ResponseEntity<Map<String, Object>> myEnrollments(HttpSession session) {
         String username = (String) session.getAttribute("loggedInUser");
@@ -703,22 +710,24 @@ class EnrollmentController {
     private boolean hasSeats(String subjectName) {
         LocalDateTime startTime = SubjectTimerController.startTimes.get(subjectName);
         Integer duration = SubjectTimerController.SUBJECT_DURATIONS.get(subjectName);
-        if (startTime == null || duration == null) return false;
+        if (startTime == null || duration == null)
+            return false;
         long elapsed = Duration.between(startTime, LocalDateTime.now()).getSeconds();
         return elapsed < duration;
     }
 
     // 기믹 유형별로 사용자 답변과 정답을 비교하여 정오를 반환한다.
     private boolean verifyGimmick(Map<String, Object> gimmickSession, Object userAnswer) {
-        if (userAnswer == null) return false;
+        if (userAnswer == null)
+            return false;
 
-        String type          = (String) gimmickSession.get("type");
+        String type = (String) gimmickSession.get("type");
         Object correctAnswer = gimmickSession.get("correctAnswer");
 
         return switch (type) {
             // 코드 타이핑: 대소문자 구분하여 정확히 일치해야 함
             case "TYPE_CODE" ->
-                    userAnswer.toString().equals(correctAnswer.toString());
+                userAnswer.toString().equals(correctAnswer.toString());
 
             // 수학 문제: 정수 값이 일치해야 함
             case "MATH_QUIZ" -> {
@@ -754,5 +763,169 @@ class EnrollmentController {
         base.put("failReason", reason);
         base.put("message", message);
         return ResponseEntity.ok(base);
+    }
+}
+
+// ──────────────────────────────────────────────
+// 랭킹 기록 데이터 구조
+// 사용자 이름, 남은 시간(초), 완료 시각을 담는다.
+// ──────────────────────────────────────────────
+class RankingEntry {
+    final String username;
+    final long remainingSeconds;
+    final String completedAt;
+
+    RankingEntry(String username, long remainingSeconds, String completedAt) {
+        this.username = username;
+        this.remainingSeconds = remainingSeconds;
+        this.completedAt = completedAt;
+    }
+}
+
+// ──────────────────────────────────────────────
+// 게임 세션 및 랭킹 관리 (메모리 저장소)
+//
+// 로그인 시 게임 시작 시각을 기록하고,
+// 모든 신청 완료 시 남은 시간을 랭킹에 저장한다.
+// 남은 시간이 많을수록(빠를수록) 높은 순위이다.
+// ──────────────────────────────────────────────
+class RankingManager {
+
+    // 사용자별 게임 시작 시각 (key: username)
+    static final Map<String, LocalDateTime> GAME_START_TIMES = new ConcurrentHashMap<>();
+
+    // 완료된 사용자 랭킹 목록 (남은 시간 내림차순 유지)
+    static final List<RankingEntry> RANKING = Collections.synchronizedList(new ArrayList<>());
+
+    // 로그인 시 호출 — 게임 시작 시각을 기록한다.
+    static void recordStart(String username) {
+        GAME_START_TIMES.put(username, LocalDateTime.now());
+    }
+
+    // 모든 신청 완료 시 호출 — 남은 시간을 랭킹에 등록한다.
+    // 이미 등록된 사용자는 중복 등록하지 않는다.
+    static boolean recordFinish(String username, long remainingSeconds) {
+        boolean alreadyRecorded = RANKING.stream().anyMatch(e -> e.username.equals(username));
+        if (alreadyRecorded) return false;
+
+        String completedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        RANKING.add(new RankingEntry(username, remainingSeconds, completedAt));
+
+        // 남은 시간 많은 순으로 정렬
+        RANKING.sort((a, b) -> Long.compare(b.remainingSeconds, a.remainingSeconds));
+        return true;
+    }
+}
+
+// ──────────────────────────────────────────────
+// 랭킹 컨트롤러
+//
+// 모든 신청을 끝낸 사용자의 이름과 남은 시간을 랭킹으로 제공한다.
+// 기본 URL: /api/ranking
+//
+// 흐름:
+//   1. 프론트엔드가 모든 신청 완료 감지
+//   2. POST /api/ranking/submit 으로 남은 시간(초) 전송
+//   3. GET /api/ranking 으로 전체 순위 조회
+//   4. GET /api/ranking/me 로 내 순위 조회
+// ──────────────────────────────────────────────
+@RestController
+@RequestMapping("/api/ranking")
+class RankingController {
+
+    // POST /api/ranking/submit
+    // 모든 신청 완료 시 남은 시간을 제출하여 랭킹에 등록한다.
+    // 요청 body: { "remainingSeconds": 95 }
+    // 성공 응답: { "success": true, "username": "student1", "remainingSeconds": 95 }
+    @PostMapping("/submit")
+    public ResponseEntity<Map<String, Object>> submitScore(
+            @RequestBody Map<String, Object> body,
+            HttpSession session) {
+
+        String username = (String) session.getAttribute("loggedInUser");
+
+        // 로그인 여부 확인
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("success", false, "message", "로그인이 필요합니다."));
+        }
+
+        // remainingSeconds 값 파싱
+        Object rawSeconds = body.get("remainingSeconds");
+        if (rawSeconds == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "remainingSeconds 값이 필요합니다."));
+        }
+
+        long remainingSeconds;
+        try {
+            remainingSeconds = Long.parseLong(rawSeconds.toString());
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "remainingSeconds는 숫자여야 합니다."));
+        }
+
+        // 랭킹 등록 (중복 방지 포함)
+        boolean recorded = RankingManager.recordFinish(username, remainingSeconds);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("username", username);
+        result.put("remainingSeconds", remainingSeconds);
+        result.put("message", recorded ? "랭킹에 등록되었습니다!" : "이미 등록된 기록이 있습니다.");
+        return ResponseEntity.ok(result);
+    }
+
+    // GET /api/ranking
+    // 전체 랭킹을 남은 시간 내림차순으로 반환한다.
+    // 응답 예시:
+    //   [{ "rank": 1, "username": "student1", "remainingSeconds": 95, "completedAt": "10:01:05" }, ...]
+    @GetMapping
+    public ResponseEntity<List<Map<String, Object>>> getRanking() {
+        List<Map<String, Object>> result = new ArrayList<>();
+        int rank = 1;
+
+        for (RankingEntry entry : RankingManager.RANKING) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("rank", rank++);
+            item.put("username", entry.username);
+            item.put("remainingSeconds", entry.remainingSeconds);
+            item.put("completedAt", entry.completedAt);
+            result.add(item);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    // GET /api/ranking/me
+    // 현재 로그인한 사용자의 순위를 반환한다.
+    // 아직 완료하지 않은 경우 rank: -1 을 반환한다.
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getMyRanking(HttpSession session) {
+        String username = (String) session.getAttribute("loggedInUser");
+
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "로그인이 필요합니다."));
+        }
+
+        List<RankingEntry> ranking = RankingManager.RANKING;
+        for (int i = 0; i < ranking.size(); i++) {
+            if (ranking.get(i).username.equals(username)) {
+                RankingEntry entry = ranking.get(i);
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("rank", i + 1);
+                item.put("username", entry.username);
+                item.put("remainingSeconds", entry.remainingSeconds);
+                item.put("completedAt", entry.completedAt);
+                return ResponseEntity.ok(item);
+            }
+        }
+
+        // 완료 기록 없음
+        return ResponseEntity.ok(Map.of(
+                "rank", -1,
+                "username", username,
+                "message", "아직 완료하지 않았습니다."));
     }
 }
