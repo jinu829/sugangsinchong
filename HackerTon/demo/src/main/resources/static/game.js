@@ -28,14 +28,11 @@ let reflectedCourseCodes = new Set();
 let appliedCourses = [];
 let appliedButtons = [];
 let confirmAutoGimmickCount = 0;
-let currentPlayerName = "";
 
 const GAME_LIMIT_SECONDS = 90;
 const MAX_CONFIRM_AUTO_GIMMICKS = 2;
 const OPEN_TIME_START_SECONDS = 9 * 60 * 60 + 59 * 60 + 50;
 const OPEN_TIME_END_SECONDS = 10 * 60 * 60;
-const RANKING_STORAGE_KEY = "courseGameRankings";
-const MAX_RANKING_COUNT = 10;
 
 
 const courses = [
@@ -49,7 +46,6 @@ const courses = [
 
 const timer = document.getElementById("timer");
 const startBtn = document.getElementById("startBtn");
-const rankingBtn = document.getElementById("rankingBtn");
 const loginScreen = document.getElementById("loginScreen");
 const app = document.getElementById("app");
 const loginForm = document.getElementById("loginForm");
@@ -86,12 +82,6 @@ const timerGimmickModal = document.getElementById("timerGimmickModal");
 const timeGimmickNumber = document.getElementById("timeGimmickNumber");
 const timeStopBtn = document.getElementById("timeStopBtn");
 const timeGimmickCloseBtn = document.getElementById("timeGimmickCloseBtn");
-const rankingModal = document.getElementById("rankingModal");
-const rankingList = document.getElementById("rankingList");
-const rankingEmpty = document.getElementById("rankingEmpty");
-const rankingCloseBtn = document.getElementById("rankingCloseBtn");
-const rankingOkBtn = document.getElementById("rankingOkBtn");
-const rankingResetBtn = document.getElementById("rankingResetBtn");
 
 loginForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -104,7 +94,6 @@ loginForm.addEventListener("submit", function (event) {
         return;
     }
 
-    currentPlayerName = name;
     userNameText.textContent = name + "님";
     loginScreen.style.display = "none";
     app.style.display = "block";
@@ -187,18 +176,6 @@ function closeEarlyStartModal() {
 earlyStartOkBtn.addEventListener("click", closeEarlyStartModal);
 earlyStartCancelBtn.addEventListener("click", closeEarlyStartModal);
 earlyStartCloseBtn.addEventListener("click", closeEarlyStartModal);
-
-rankingBtn.addEventListener("click", openRankingModal);
-rankingCloseBtn.addEventListener("click", closeRankingModal);
-rankingOkBtn.addEventListener("click", closeRankingModal);
-rankingResetBtn.addEventListener("click", function () {
-    if (!confirm("랭킹 기록을 모두 삭제하시겠습니까?")) {
-        return;
-    }
-
-    localStorage.removeItem(RANKING_STORAGE_KEY);
-    renderRankings();
-});
 
 window.addEventListener("load", function () {
     nameInput.focus();
@@ -764,76 +741,6 @@ function updateSummary() {
     creditCountText.textContent = creditCount;
 }
 
-function openRankingModal() {
-    renderRankings();
-    rankingModal.style.display = "flex";
-}
-
-function closeRankingModal() {
-    rankingModal.style.display = "none";
-}
-
-function getRankings() {
-    const savedRankings = localStorage.getItem(RANKING_STORAGE_KEY);
-
-    if (!savedRankings) {
-        return [];
-    }
-
-    try {
-        const rankings = JSON.parse(savedRankings);
-
-        if (!Array.isArray(rankings)) {
-            return [];
-        }
-
-        return rankings;
-    } catch (error) {
-        return [];
-    }
-}
-
-function saveRanking(clearTime) {
-    const playerName = currentPlayerName || "이름없음";
-    const rankings = getRankings();
-
-    rankings.push({
-        name: playerName,
-        time: Number(clearTime.toFixed(2)),
-        courses: courses.length,
-        savedAt: new Date().toISOString()
-    });
-
-    rankings.sort(function (first, second) {
-        return first.time - second.time;
-    });
-
-    localStorage.setItem(RANKING_STORAGE_KEY, JSON.stringify(rankings.slice(0, MAX_RANKING_COUNT)));
-}
-
-function renderRankings() {
-    const rankings = getRankings();
-
-    rankingList.innerHTML = "";
-    rankingEmpty.style.display = rankings.length === 0 ? "block" : "none";
-
-    rankings.forEach(function (ranking, index) {
-        const row = document.createElement("tr");
-        const rankCell = document.createElement("td");
-        const nameCell = document.createElement("td");
-        const timeCell = document.createElement("td");
-        const courseCell = document.createElement("td");
-
-        rankCell.textContent = index + 1;
-        nameCell.textContent = ranking.name;
-        timeCell.textContent = Number(ranking.time).toFixed(2) + "초";
-        courseCell.textContent = (ranking.courses || courses.length) + "개";
-
-        row.append(rankCell, nameCell, timeCell, courseCell);
-        rankingList.appendChild(row);
-    });
-}
-
 function checkClear() {
     if (appliedCourseCodes.size === courses.length) {
         gameClear();
@@ -849,12 +756,9 @@ function gameClear() {
     isGameTimerStarted = false;
 
     const clearTime = (Date.now() - startTime) / 1000;
-    saveRanking(clearTime);
-    renderRankings();
 
     setTimeout(function () {
         alert("수강신청 성공! 기록: " + clearTime.toFixed(2) + "초");
-        openRankingModal();
     }, 100);
 
     isGameStarted = false;
