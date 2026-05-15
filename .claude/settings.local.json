@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\82107\\\\Desktop\\\\git\\\\sugangsinchong\\\\HackerTon\" -Recurse -Name)"
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\82107\\\\Desktop\\\\git\\\\sugangsinchong\\\\HackerTon\" -Recurse -Name)",
+      "Bash(curl -s http://localhost:8080/)"
     ]
   }
 }

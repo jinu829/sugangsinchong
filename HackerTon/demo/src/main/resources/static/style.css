@@ -931,6 +931,71 @@ tbody tr:hover {
     z-index: 9999;
 }
 
+/* 도망가는 버튼 기믹 */
+.runaway-box {
+    width: 370px;
+    background: #fffdf5;
+    border: 2px solid #c8757c;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 0 8px rgba(208, 0, 24, 0.16);
+}
+
+.runaway-header {
+    height: 38px;
+    margin: 12px 14px 0;
+    background: linear-gradient(90deg, #c90014, #8f0010);
+    color: white;
+    border-radius: 5px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.runaway-body {
+    margin: 10px 16px 16px;
+    border: 1px solid #d8aaa9;
+    border-radius: 4px;
+    background: #fffdf2;
+    padding: 18px;
+    text-align: center;
+}
+
+.runaway-body p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.runaway-container {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    margin-top: 14px;
+    background: #f6ece8;
+    border: 1px dashed #c8757c;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#runawayBtn {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    padding: 9px 20px;
+    background: #a80013;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    transition: left 0.08s ease, top 0.08s ease;
+    white-space: nowrap;
+}
+
 /* 도움 요청 팝업 */
 .help-overlay {
     background: rgba(0, 0, 0, 0.78);

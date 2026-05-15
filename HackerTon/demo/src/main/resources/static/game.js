@@ -5,6 +5,8 @@ let randomBackgroundGimmickTimer = null;
 let confirmAutoGimmickTimer = null;
 let openTimeInterval = null;
 let helpPopupTimer = null;
+let isHelpPopupTriggered = false;
+let macroSabotageHandler = null;
 
 let isGameStarted = false;
 let isGameOver = false;
@@ -102,6 +104,10 @@ const helpYesBtn = document.getElementById("helpYesBtn");
 const helpNoBtn = document.getElementById("helpNoBtn");
 const helpConfirmBtn = document.getElementById("helpConfirmBtn");
 
+const runawayModal = document.getElementById("runawayModal");
+const runawayArea = document.getElementById("runawayArea");
+const runawayBtn = document.getElementById("runawayBtn");
+
 loginForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -113,11 +119,29 @@ loginForm.addEventListener("submit", function (event) {
         return;
     }
 
-    currentPlayerName = name;
-    userNameText.textContent = name + "님";
-    loginScreen.style.display = "none";
-    app.style.display = "block";
-    startOpenTimeClock();
+    // 서버에 이름 기록 후 게임 화면으로 전환
+    fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: name })
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+        if (!data.success) {
+            console.error("로그인 실패:", data.message);
+        }
+    })
+    .catch(function (err) {
+        console.error("로그인 서버 오류:", err);
+    })
+    .finally(function () {
+        // 서버 응답과 무관하게 게임 화면으로 전환
+        currentPlayerName = name;
+        userNameText.textContent = name + "님";
+        loginScreen.style.display = "none";
+        app.style.display = "block";
+        startOpenTimeClock();
+    });
 });
 
 function startOpenTimeClock() {
@@ -261,6 +285,7 @@ startBtn.addEventListener("click", function () {
     appliedCourses = [];
     appliedButtons = [];
     confirmAutoGimmickCount = 0;
+    isHelpPopupTriggered = false;
     clearConfirmAutoGimmickTimer();
 
     selectedCourses.innerHTML = "";
@@ -325,22 +350,90 @@ function startRandomApplyGimmick(course, button) {
     const gimmicks = [
         openMacroModal,
         openLongMacroModal,
-        openTimeGimmick
+        openTimeGimmick,
+        openRunawayGimmick,
+        openSabotagedMacroGimmick
     ];
 
     const randomIndex = Math.floor(Math.random() * gimmicks.length);
     gimmicks[randomIndex]();
 }
 
-/* 도움 요청 팝업 — 랜덤 타이밍에 표시 */
+/* 도망가는 버튼 기믹 */
+function openRunawayGimmick() {
+    resetRunawayButtonPosition();
+    runawayModal.style.display = "flex";
+}
+
+function closeRunawayGimmick() {
+    runawayModal.style.display = "none";
+}
+
+function resetRunawayButtonPosition() {
+    runawayBtn.style.left = "50%";
+    runawayBtn.style.top = "50%";
+    runawayBtn.style.transform = "translate(-50%, -50%)";
+}
+
+runawayBtn.addEventListener("mouseover", function () {
+    const maxX = runawayArea.clientWidth - runawayBtn.offsetWidth - 10;
+    const maxY = runawayArea.clientHeight - runawayBtn.offsetHeight - 10;
+
+    runawayBtn.style.transform = "none";
+    runawayBtn.style.left = Math.max(5, Math.random() * maxX) + "px";
+    runawayBtn.style.top = Math.max(5, Math.random() * maxY) + "px";
+});
+
+runawayBtn.addEventListener("click", function () {
+    if (isGameOver) return;
+
+    closeRunawayGimmick();
+    openMacroModal();
+});
+
+/* 방해 매크로: 2번째 글자 입력 시 랜덤하게 바꿔치기 */
+function openSabotagedMacroGimmick() {
+    openMacroModal();
+    clearMacroSabotage();
+
+    macroSabotageHandler = function () {
+        if (macroInput.value.length !== 2) return;
+
+        const originalValue = macroInput.value;
+        const firstChar = originalValue[0];
+        const secondChar = originalValue[1];
+        const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        let fakeChar = chars[Math.floor(Math.random() * chars.length)];
+
+        if (fakeChar === secondChar) {
+            fakeChar = chars[(chars.indexOf(fakeChar) + 1) % chars.length];
+        }
+
+        macroInput.value = firstChar + fakeChar;
+        clearMacroSabotage();
+    };
+
+    macroInput.addEventListener("input", macroSabotageHandler);
+}
+
+function clearMacroSabotage() {
+    if (!macroSabotageHandler) return;
+
+    macroInput.removeEventListener("input", macroSabotageHandler);
+    macroSabotageHandler = null;
+}
+
+/* 도움 요청 팝업 — 게임 당 1회, 20~45초 사이 랜덤 타이밍에 표시 */
 function scheduleHelpPopup() {
+    if (isHelpPopupTriggered) return;
+
     clearTimeout(helpPopupTimer);
 
-    // 10~25초 사이 랜덤 딜레이 후 팝업 표시
-    const delay = Math.floor(Math.random() * 15000) + 10000;
+    const delay = Math.floor(Math.random() * 25000) + 20000;
 
     helpPopupTimer = setTimeout(function () {
-        if (!isGameStarted || isGameOver) return;
+        if (!isGameStarted || isGameOver || isHelpPopupTriggered) return;
+        isHelpPopupTriggered = true;
         showHelpPopup();
     }, delay);
 }
@@ -354,11 +447,6 @@ function showHelpPopup() {
 
 function closeHelpPopup() {
     helpPopupModal.style.display = "none";
-
-    // 닫은 뒤 게임이 진행 중이면 다음 팝업 예약
-    if (isGameStarted && !isGameOver) {
-        scheduleHelpPopup();
-    }
 }
 
 // 도와준다 → _02 이미지
@@ -431,7 +519,7 @@ function openLongMacroModal() {
 }
 
 function makeRandomCode(length) {
-    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     let result = "";
 
     for (let i = 0; i < length; i++) {
@@ -444,13 +532,14 @@ function makeRandomCode(length) {
 macroSubmitBtn.addEventListener("click", function () {
     if (isGameOver) return;
 
-    if (macroInput.value.trim().toUpperCase() !== currentMacroCode) {
+    if (macroInput.value.trim() !== currentMacroCode) {
         alert("매크로 번호가 일치하지 않습니다.");
         macroInput.value = "";
         return;
     }
 
     macroModal.style.display = "none";
+    clearMacroSabotage();
     resetMacroStyle();
     openConfirmStep1();
 });
@@ -460,6 +549,7 @@ macroCloseBtn.addEventListener("click", closeMacroModal);
 
 function closeMacroModal() {
     macroModal.style.display = "none";
+    clearMacroSabotage();
     resetMacroStyle();
 }
 
@@ -490,7 +580,7 @@ timeStopBtn.addEventListener("click", function () {
 
     clearInterval(timeGimmickInterval);
 
-    if (elapsed >= 2.95 && elapsed <= 3.05) {
+    if (elapsed >= 2.95 && elapsed <= 3.12) {
         timerGimmickModal.style.display = "none";
         openConfirmStep1();
     } else {
@@ -821,8 +911,36 @@ function updateSummary() {
 }
 
 function openRankingModal() {
-    renderRankings();
     rankingModal.style.display = "flex";
+    rankingList.innerHTML = "";
+    rankingEmpty.style.display = "none";
+
+    // 서버에서 랭킹 데이터를 가져와 표시
+    fetch("/api/ranking")
+        .then(function (res) { return res.json(); })
+        .then(function (data) { renderServerRankings(data); })
+        .catch(function () { renderRankings(); }); // 서버 오류 시 로컬 데이터로 대체
+}
+
+function renderServerRankings(rankings) {
+    rankingList.innerHTML = "";
+    rankingEmpty.style.display = rankings.length === 0 ? "block" : "none";
+
+    rankings.forEach(function (entry) {
+        const row = document.createElement("tr");
+        const rankCell = document.createElement("td");
+        const nameCell = document.createElement("td");
+        const timeCell = document.createElement("td");
+        const courseCell = document.createElement("td");
+
+        rankCell.textContent = entry.rank;
+        nameCell.textContent = entry.username;
+        timeCell.textContent = entry.remainingSeconds + "초 남음";
+        courseCell.textContent = courses.length + "개";
+
+        row.append(rankCell, nameCell, timeCell, courseCell);
+        rankingList.appendChild(row);
+    });
 }
 
 function closeRankingModal() {
@@ -907,13 +1025,28 @@ function gameClear() {
     isGameTimerStarted = false;
 
     const clearTime = (Date.now() - startTime) / 1000;
-    saveRanking(clearTime);
-    renderRankings();
+    const remainingSeconds = Math.max(0, GAME_LIMIT_SECONDS - clearTime);
 
-    setTimeout(function () {
-        alert("수강신청 성공! 기록: " + clearTime.toFixed(2) + "초");
+    // 서버에 남은 시간 제출 완료 후 알림 + 랭킹 모달 오픈 (타이밍 문제 방지)
+    fetch("/api/ranking/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ remainingSeconds: Math.floor(remainingSeconds) })
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+        if (!data.success) {
+            console.error("랭킹 등록 실패:", data.message);
+        }
+    })
+    .catch(function (err) {
+        console.error("랭킹 서버 오류:", err);
+    })
+    .finally(function () {
+        // 제출 완료 후 알림과 랭킹 모달 표시
+        alert("수강신청 성공! 기록: " + clearTime.toFixed(2) + "초 (남은 시간: " + Math.floor(remainingSeconds) + "초)");
         openRankingModal();
-    }, 100);
+    });
 
     isGameStarted = false;
 }
@@ -935,8 +1068,10 @@ function gameOver() {
     macroModal.style.display = "none";
     confirmModal.style.display = "none";
     timerGimmickModal.style.display = "none";
+    runawayModal.style.display = "none";
     helpPopupModal.style.display = "none";
     clearTimeout(helpPopupTimer);
+    clearMacroSabotage();
 
     document.body.classList.remove("screen-invert");
     endMouseReverse();

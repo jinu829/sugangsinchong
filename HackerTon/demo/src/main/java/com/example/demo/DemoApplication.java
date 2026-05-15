@@ -510,42 +510,36 @@ class AuthController {
     }
 
     // POST /api/auth/login
-    // 아이디·비밀번호를 검증하고, 성공 시 세션에 사용자 정보를 저장한다.
-    // 세션이 생성되면 이후 접속에서는 로그인 창이 뜨지 않는다.
+    // 이름을 받아 세션에 저장하고 게임 시작 시각을 기록한다.
+    // 비밀번호 없이 이름만으로 로그인한다.
     //
-    // 요청 body: { "username": "student1", "password": "pass1234" }
-    // 성공 응답: { "success": true, "username": "student1" }
-    // 실패 응답: { "success": false, "message": "..." } (HTTP 401)
+    // 요청 body: { "username": "홍길동" }
+    // 성공 응답: { "success": true, "username": "홍길동" }
+    // 실패 응답: { "success": false, "message": "..." } (HTTP 400)
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(
             @RequestBody Map<String, String> credentials,
             HttpSession session) {
 
         String username = credentials.get("username");
-        String password = credentials.get("password");
+
+        // 이름이 비어 있으면 거부
+        if (username == null || username.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "이름을 입력해주세요."));
+        }
+
+        username = username.trim();
+
+        // 세션에 사용자 이름 저장 및 게임 시작 시각 기록
+        session.setAttribute(SESSION_USER_KEY, username);
+        RankingManager.recordStart(username);
 
         Map<String, Object> result = new HashMap<>();
-
-        // 아이디와 비밀번호가 USER_DB와 일치하는지 확인
-        if (username != null
-                && USER_DB.containsKey(username)
-                && USER_DB.get(username).equals(password)) {
-
-            // 로그인 성공 → 세션에 사용자 이름 저장 및 게임 시작 시각 기록
-            session.setAttribute(SESSION_USER_KEY, username);
-            RankingManager.recordStart(username);
-
-            result.put("success", true);
-            result.put("username", username);
-            result.put("message", "로그인 성공");
-            return ResponseEntity.ok(result);
-
-        } else {
-            // 로그인 실패 → 401 반환, 세션에 아무것도 저장하지 않음
-            result.put("success", false);
-            result.put("message", "아이디 또는 비밀번호가 올바르지 않습니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
-        }
+        result.put("success", true);
+        result.put("username", username);
+        result.put("message", "로그인 성공");
+        return ResponseEntity.ok(result);
     }
 
     // POST /api/auth/logout
