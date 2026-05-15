@@ -7,7 +7,27 @@
 </head>
 <body>
 
-<div class="app">
+<div id="loginScreen" class="login-screen">
+    <header class="login-topbar">세종대학교 수강신청</header>
+
+    <main class="login-main">
+        <form id="loginForm" class="login-box">
+            <div class="login-box-header">ⓘ 시스템 로그인</div>
+
+            <div class="login-fields">
+                <label for="nameInput">이름</label>
+                <input id="nameInput"
+                       type="text"
+                       autocomplete="off"
+                       placeholder="이름">
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+    </main>
+</div>
+
+<div id="app" class="app">
 
     <header class="topbar">
         <div class="brand">
@@ -22,7 +42,7 @@
 
         <div class="user-area">
             <div class="circle small"></div>
-            <strong>000님</strong>
+            <strong id="userNameText">000님</strong>
             <strong>KOR <i class="arrow-down"></i></strong>
             <div class="circle small"></div>
         </div>
@@ -57,7 +77,7 @@
                            autocomplete="off"
                            placeholder="매크로 번호를 입력하세요">
                 </div>
-`
+
                 <div class="macro-footer">
                     <button id="macroSubmitBtn">코드입력</button>
                     <button id="macroCancelBtn">닫기</button>
@@ -85,6 +105,25 @@
             </div>
         </div>
 
+        <div id="earlyStartModal" class="modal-overlay">
+            <div class="early-start-box">
+                <div class="early-start-header">
+                    <span>ⓘ 수강신청 확인</span>
+                    <button id="earlyStartCloseBtn">×</button>
+                </div>
+
+                <div class="early-start-body">
+                    <div class="error-icon">×</div>
+                    <p>수강신청 시간이 아닙니다!</p>
+                </div>
+
+                <div class="early-start-footer">
+                    <button id="earlyStartOkBtn">확인</button>
+                    <button id="earlyStartCancelBtn">취소</button>
+                </div>
+            </div>
+        </div>
+
         <div id="timerGimmickModal" class="modal-overlay">
             <div class="time-gimmick-box">
                 <div class="time-gimmick-header">
@@ -101,7 +140,10 @@
 
         <main class="main">
 
-            <h1>수강신청</h1>
+            <div class="main-header">
+                <h1>수강신청</h1>
+                <div id="timer">00.00초</div>
+            </div>
 
             <div class="tabs">
                 <span class="active-tab">강좌조회</span>
@@ -154,7 +196,7 @@
                 </table>
 
                 <p class="summary">
-                    수강 가능 학점: 15 / 신청 과목수: <span id="courseCount">0</span> / 신청 학점:
+                    수강 가능 학점: 18 / 신청 과목수: <span id="courseCount">0</span> / 신청 학점:
                     <span id="creditCount">0</span>
                 </p>
             </section>
@@ -188,8 +230,7 @@
 
             <div class="game-panel">
                 <button id="startBtn">게임 시작</button>
-                <button id="refreshBtn">재조회</button>
-                <div id="timer">00.00초</div>
+                <div id="openTimeText">09시 59분 50초</div>
             </div>
 
         </main>
