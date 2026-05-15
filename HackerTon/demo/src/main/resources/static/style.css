@@ -414,7 +414,8 @@ tbody tr:hover {
 }
 
 #startBtn,
-#refreshBtn {
+#refreshBtn,
+#rankingBtn {
     height: 42px;
     padding: 0 24px;
     border: none;
@@ -429,8 +430,13 @@ tbody tr:hover {
     background-color: #7d000d;
 }
 
+#rankingBtn {
+    background-color: #303030;
+}
+
 #startBtn:hover,
-#refreshBtn:hover {
+#refreshBtn:hover,
+#rankingBtn:hover {
     background-color: #9e0012;
 }
 
@@ -808,6 +814,105 @@ tbody tr:hover {
     padding: 8px 22px;
     font-size: 16px;
     cursor: pointer;
+}
+
+/* 랭킹 모달 */
+.ranking-box {
+    width: 560px;
+    max-width: calc(100vw - 32px);
+    background: #fffdf5;
+    border: 2px solid #c8757c;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 0 8px rgba(208, 0, 24, 0.16);
+}
+
+.ranking-header {
+    height: 40px;
+    margin: 12px 14px 0;
+    background: linear-gradient(90deg, #c90014, #8f0010);
+    color: white;
+    border-radius: 5px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#rankingCloseBtn {
+    background: none;
+    border: none;
+    color: #310005;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.ranking-body {
+    min-height: 274px;
+    margin: 10px 16px;
+    border: 1px solid #d8aaa9;
+    border-radius: 4px;
+    background: #fffdf2;
+    padding: 14px;
+}
+
+.ranking-table {
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.ranking-table th {
+    background-color: #303030;
+}
+
+.ranking-table td {
+    height: 38px;
+}
+
+.ranking-table tbody tr:first-child td {
+    background-color: #fff0b8;
+    font-weight: bold;
+}
+
+.ranking-empty {
+    display: none;
+    margin: 94px 0 0;
+    color: #6f000c;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.ranking-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 0 30px 18px;
+}
+
+#rankingResetBtn,
+#rankingOkBtn {
+    height: 36px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+#rankingResetBtn {
+    padding: 0 14px;
+    background: white;
+    color: #5a0010;
+    border: 1px solid #7a0010;
+}
+
+#rankingOkBtn {
+    width: 72px;
+    background: #a80013;
+    color: white;
+    border: none;
 }
 
 /* 화면 반전 */
