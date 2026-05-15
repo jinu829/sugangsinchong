@@ -269,6 +269,28 @@
     </div>
 </div>
 
+<!-- 도움 요청 팝업 -->
+<div id="helpPopupModal" class="modal-overlay help-overlay">
+    <div class="help-popup-box">
+
+        <!-- 1단계: 질문 이미지 + 선택 버튼 -->
+        <div id="helpQuestion">
+            <img src="KakaoTalk_20260516_024154413.png" class="help-main-img" alt="도움 요청">
+            <div class="help-btn-row">
+                <button id="helpYesBtn">도와준다</button>
+                <button id="helpNoBtn">도와주지 않는다</button>
+            </div>
+        </div>
+
+        <!-- 2단계: 결과 이미지 + 확인 버튼 -->
+        <div id="helpResult">
+            <img id="helpResultImg" src="" class="help-result-img" alt="">
+            <button id="helpConfirmBtn">확인</button>
+        </div>
+
+    </div>
+</div>
+
 <script src="game.js"></script>
 </body>
 </html>

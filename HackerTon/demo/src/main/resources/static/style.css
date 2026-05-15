@@ -930,3 +930,85 @@ tbody tr:hover {
     pointer-events: none;
     z-index: 9999;
 }
+
+/* 도움 요청 팝업 */
+.help-overlay {
+    background: rgba(0, 0, 0, 0.78);
+    z-index: 1000;
+}
+
+.help-popup-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90vw;
+}
+
+/* 1단계: 질문 이미지 */
+.help-main-img {
+    max-width: 80vw;
+    max-height: 62vh;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+}
+
+/* 도와준다 / 도와주지 않는다 버튼 */
+.help-btn-row {
+    display: flex;
+    gap: 28px;
+    margin-top: 22px;
+    justify-content: center;
+}
+
+.help-btn-row button {
+    padding: 13px 38px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #111;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.help-btn-row button:hover {
+    background-color: #e8e8e8;
+}
+
+/* 2단계: 결과 이미지 + 확인 버튼 */
+#helpResult {
+    display: none;
+    position: relative;
+}
+
+.help-result-img {
+    max-width: 82vw;
+    max-height: 80vh;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+}
+
+/* 결과 이미지 가운데 아래 파란 확인 버튼 */
+#helpConfirmBtn {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 52px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+    white-space: nowrap;
+}
+
+#helpConfirmBtn:hover {
+    background-color: #1558b0;
+}

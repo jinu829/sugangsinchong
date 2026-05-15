@@ -4,6 +4,7 @@ let gameLimitTimer = null;
 let randomBackgroundGimmickTimer = null;
 let confirmAutoGimmickTimer = null;
 let openTimeInterval = null;
+let helpPopupTimer = null;
 
 let isGameStarted = false;
 let isGameOver = false;
@@ -92,6 +93,14 @@ const rankingEmpty = document.getElementById("rankingEmpty");
 const rankingCloseBtn = document.getElementById("rankingCloseBtn");
 const rankingOkBtn = document.getElementById("rankingOkBtn");
 const rankingResetBtn = document.getElementById("rankingResetBtn");
+
+const helpPopupModal = document.getElementById("helpPopupModal");
+const helpQuestion = document.getElementById("helpQuestion");
+const helpResult = document.getElementById("helpResult");
+const helpResultImg = document.getElementById("helpResultImg");
+const helpYesBtn = document.getElementById("helpYesBtn");
+const helpNoBtn = document.getElementById("helpNoBtn");
+const helpConfirmBtn = document.getElementById("helpConfirmBtn");
 
 loginForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -264,6 +273,7 @@ startBtn.addEventListener("click", function () {
     openTimeText.style.display = "none";
 
     startRandomBackgroundGimmicks();
+    scheduleHelpPopup();
 });
 
 function renderRandomCourses() {
@@ -321,6 +331,52 @@ function startRandomApplyGimmick(course, button) {
     const randomIndex = Math.floor(Math.random() * gimmicks.length);
     gimmicks[randomIndex]();
 }
+
+/* 도움 요청 팝업 — 랜덤 타이밍에 표시 */
+function scheduleHelpPopup() {
+    clearTimeout(helpPopupTimer);
+
+    // 10~25초 사이 랜덤 딜레이 후 팝업 표시
+    const delay = Math.floor(Math.random() * 15000) + 10000;
+
+    helpPopupTimer = setTimeout(function () {
+        if (!isGameStarted || isGameOver) return;
+        showHelpPopup();
+    }, delay);
+}
+
+function showHelpPopup() {
+    helpQuestion.style.display = "block";
+    helpResult.style.display = "none";
+    helpResultImg.src = "";
+    helpPopupModal.style.display = "flex";
+}
+
+function closeHelpPopup() {
+    helpPopupModal.style.display = "none";
+
+    // 닫은 뒤 게임이 진행 중이면 다음 팝업 예약
+    if (isGameStarted && !isGameOver) {
+        scheduleHelpPopup();
+    }
+}
+
+// 도와준다 → _02 이미지
+helpYesBtn.addEventListener("click", function () {
+    helpResultImg.src = "KakaoTalk_20260516_024154413_02.png";
+    helpQuestion.style.display = "none";
+    helpResult.style.display = "block";
+});
+
+// 도와주지 않는다 → _01 이미지
+helpNoBtn.addEventListener("click", function () {
+    helpResultImg.src = "KakaoTalk_20260516_024154413_01.png";
+    helpQuestion.style.display = "none";
+    helpResult.style.display = "block";
+});
+
+// 확인 버튼으로 팝업 닫기
+helpConfirmBtn.addEventListener("click", closeHelpPopup);
 
 /* 수강신청 중 랜덤 배경 기믹 */
 function startRandomBackgroundGimmicks() {
@@ -845,6 +901,8 @@ function gameClear() {
     clearTimeout(gameLimitTimer);
     clearInterval(randomBackgroundGimmickTimer);
     clearConfirmAutoGimmickTimer();
+    clearTimeout(helpPopupTimer);
+    helpPopupModal.style.display = "none";
     reflectAppliedCourses();
     isGameTimerStarted = false;
 
@@ -877,6 +935,8 @@ function gameOver() {
     macroModal.style.display = "none";
     confirmModal.style.display = "none";
     timerGimmickModal.style.display = "none";
+    helpPopupModal.style.display = "none";
+    clearTimeout(helpPopupTimer);
 
     document.body.classList.remove("screen-invert");
     endMouseReverse();
